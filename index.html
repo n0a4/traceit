@@ -40,14 +40,24 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Subtle shadow */
         }
 
-        video, canvas {
+        video {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover; /* Ensure video covers the area without distortion */
-            /* Removed: transform: scaleX(-1); to fix the flipped camera issue */
+            transform: scaleX(-1); /* Re-added to horizontally flip the video feed */
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensure canvas covers the area without distortion */
+            /* No transform on canvas, as it draws on top of the already-flipped video */
         }
 
         .controls {
@@ -235,7 +245,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw the video frame onto the canvas
-            // The CSS 'transform: scaleX(-1)' was removed to prevent mirroring.
+            // The CSS 'transform: scaleX(-1)' is now applied only to the video element.
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             // If an overlay image is loaded, draw it with current transparency

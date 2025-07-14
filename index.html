@@ -47,7 +47,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover; /* Ensure video covers the area without distortion */
-            transform: scaleX(-1); /* Mirror the camera feed for a more natural feel */
+            /* Removed: transform: scaleX(-1); to fix the flipped camera issue */
         }
 
         .controls {
@@ -212,6 +212,7 @@
         async function startCamera() {
             try {
                 // Request user media (video only)
+                // Prefer 'environment' (rear camera) for tracing
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                 video.srcObject = stream; // Set video source to camera stream
 
@@ -234,9 +235,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw the video frame onto the canvas
-            // We mirror the video horizontally to make it feel like a selfie camera,
-            // but for a tracing app, it's often more intuitive if the overlay matches the physical world.
-            // If you want the camera feed to not be mirrored, remove the transform: scaleX(-1) from CSS.
+            // The CSS 'transform: scaleX(-1)' was removed to prevent mirroring.
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             // If an overlay image is loaded, draw it with current transparency
@@ -300,16 +299,11 @@
             cancelAnimationFrame(animationFrameId);
 
             // Re-set canvas dimensions based on current video dimensions
-            // This assumes video.videoWidth and video.videoHeight are available
-            // and reflect the current stream resolution.
             if (video.videoWidth && video.videoHeight) {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
             } else {
                 // Fallback if video dimensions aren't immediately available
-                // This might happen if the video hasn't loaded metadata yet
-                // or if the stream is paused.
-                // In a real app, you might want to re-evaluate container size.
                 const videoContainer = document.querySelector('.video-container');
                 canvas.width = videoContainer.offsetWidth;
                 canvas.height = videoContainer.offsetHeight;
